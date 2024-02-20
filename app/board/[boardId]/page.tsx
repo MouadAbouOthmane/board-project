@@ -1,16 +1,20 @@
-import { Convas } from "./_components/convas"
+import { Convas } from "./_components/convas";
+import { Room } from "@/components/room";
+import { Loading } from "./_components/loading";
 
 interface BoardIdPageProps {
-    params: {
-        boardId: string
-    
-    }
+  params: {
+    boardId: string;
+  };
 }
 
-const BoardIdPage = ({params, }: BoardIdPageProps) => {
-    return (
-        <Convas boardId={params.boardId}/>
-    )
-}
+const BoardIdPage = ({ params }: BoardIdPageProps) => {
 
-export default BoardIdPage
+  return (
+    <Room roomId={params.boardId} fallback={<Loading />}>
+      <Convas boardId={params.boardId} />
+    </Room>
+  );
+};
+
+export default BoardIdPage;
