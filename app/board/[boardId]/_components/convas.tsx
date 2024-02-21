@@ -1,11 +1,13 @@
 "use client"
 
-import { CanvasMode, CanvasState } from "@/types/canvas"
+import { Camera, CanvasMode, CanvasState } from "@/types/canvas"
 import { Info } from "./info"
 import { Participants } from "./participants"
 import { Toolbar } from "./toolbar"
-import { useState } from "react"
-import { useCanRedo, useCanUndo, useHistory } from "@/liveblocks.config"
+import { useCallback, useState } from "react"
+import { useCanRedo, useCanUndo, useHistory, useMutation } from "@/liveblocks.config"
+import { CursorsPresence } from "./cursors-presence"
+import { pointerEventToCanvasPoint } from "@/lib/utils"
 
 interface ConvasProps {
     boardId: string
@@ -16,9 +18,26 @@ export const Convas = ({boardId} : ConvasProps) => {
         mode: CanvasMode.None
     })
 
+    const [camera, setCamera] = useState<Camera>({ x: 0, y:0 })
+
     const history = useHistory()
     const canUndo = useCanUndo()
     const canRedo = useCanRedo()
+
+    const onWheel = useCallback((e: React.WheelEvent) => {
+        setCamera((camera) => ({
+            x: camera.x - e.deltaX,
+            y: camera.y - e.deltaY,
+        }))
+    }, [])
+
+    const onPointerMove = useMutation(({ setMyPresence }, e: React.PointerEvent) => {
+        e.preventDefault()
+
+        const current = pointerEventToCanvasPoint(e, camera)
+
+        setMyPresence({ cursor: current })
+    }, [])
 
     return (
         <main 
@@ -34,6 +53,15 @@ export const Convas = ({boardId} : ConvasProps) => {
                 undo={history.undo}
                 redo={history.redo}
             />
+            <svg
+                onWheel={onWheel}
+                onPointerMove={onPointerMove}
+                className="w-[100vw] h-[100vh]"
+            >
+                <g>
+                    <CursorsPresence />
+                </g>
+            </svg>
         </main>
     )
 }
