@@ -1,4 +1,4 @@
-import { Convas } from "./_components/convas";
+import { Canvas } from "./_components/canvas";
 import { Room } from "@/components/room";
 import { Loading } from "./_components/loading";
 
@@ -12,7 +12,7 @@ const BoardIdPage = ({ params }: BoardIdPageProps) => {
 
   return (
     <Room roomId={params.boardId} fallback={<Loading />}>
-      <Convas boardId={params.boardId} />
+      <Canvas boardId={params.boardId} />
     </Room>
   );
 };
